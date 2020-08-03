@@ -1,13 +1,14 @@
 package com.teksystems.users.restfulusersexercise.Services;
 
 import com.teksystems.users.restfulusersexercise.Model.User;
+import com.teksystems.users.restfulusersexercise.Shared.Dto.UserDto;
 
 import java.util.List;
 
 public interface UserService {
-    List<User> getUsers();
+    List<User> getUsers(int page, int limit);
 
-    void createUser(User user);
+    UserDto createUser(UserDto userDto);
 
     User getUserByEmail(String email);
 

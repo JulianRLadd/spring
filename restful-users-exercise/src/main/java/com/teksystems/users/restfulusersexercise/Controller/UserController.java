@@ -1,7 +1,11 @@
 package com.teksystems.users.restfulusersexercise.Controller;
 
+import com.teksystems.users.restfulusersexercise.Model.Request.UserRequest;
+import com.teksystems.users.restfulusersexercise.Model.Response.UserResponse;
 import com.teksystems.users.restfulusersexercise.Model.User;
 import com.teksystems.users.restfulusersexercise.Services.UserService;
+import com.teksystems.users.restfulusersexercise.Shared.Dto.UserDto;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +21,9 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getUsers(){
-        List<User> returnValue = userService.getUsers();
+    public List<User> getUsers(@RequestParam(value = "page", defaultValue = "1")int page,
+                               @RequestParam(value = "limit", defaultValue = "2")int limit){
+        List<User> returnValue = userService.getUsers(page,limit);
         return returnValue;
     }
 
@@ -37,9 +42,22 @@ public class UserController {
 
 
     @PostMapping
-    public void createUser(@RequestBody User user){
-        userService.createUser(user);
+    public UserResponse createUser(@RequestBody UserRequest userRequest){
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(userRequest, userDto);
+
+        UserDto updatedUser = userService.createUser(userDto);
+
+        UserResponse returnValue = new UserResponse();
+        BeanUtils.copyProperties(updatedUser, returnValue);
+
+        return returnValue;
     }
+
+//    @PostMapping
+//    public void createUser(@RequestBody User user){
+//        userService.createUser(user);
+//    }
 
 
     @PutMapping(path = "/{id}")

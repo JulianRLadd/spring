@@ -2,7 +2,12 @@ package com.teksystems.users.restfulusersexercise.Services.Implementations;
 
 import com.teksystems.users.restfulusersexercise.Model.User;
 import com.teksystems.users.restfulusersexercise.Services.UserService;
+import com.teksystems.users.restfulusersexercise.Shared.Dto.UserDto;
 import com.teksystems.users.restfulusersexercise.dao.UserRepository;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,16 +25,35 @@ public class UserServiceImplementation implements UserService {
 
 
     @Override
-    public List<User> getUsers() {
-        List<User> returnValue = new ArrayList<User>();
-        returnValue = (List<User>) userRepository.findAll();
+    public List<User> getUsers(int page, int limit) {
+        List<User> returnValue;
+
+        if(page>0) page--;
+        Pageable pageableRequest = PageRequest.of(page,limit);
+        Page<User> userPage = userRepository.findAll(pageableRequest);
+        returnValue = userPage.getContent();
+
         return returnValue;
     }
 
     @Override
-    public void createUser(User user) {
-        userRepository.save(user);
+    public UserDto createUser(UserDto userDto) {
+
+        User newUser = new User();
+        BeanUtils.copyProperties(userDto, newUser);
+
+        User storedUserDetails = userRepository.save(newUser);
+
+        UserDto returnValue = new UserDto();
+        BeanUtils.copyProperties(storedUserDetails, returnValue);
+
+        return returnValue;
     }
+
+//    @Override
+//    public void createUser(User user) {
+//        userRepository.save(user);
+//    }
 
     @Override
     public User getUserByEmail(String email) {
